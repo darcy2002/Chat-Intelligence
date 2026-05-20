@@ -1,5 +1,6 @@
 import { Router, type Request, type Response } from "express";
 import type { ChatRequest, ChatResponse, ChatError, Message } from "../shared/types.js";
+import { getProvider } from "../llm/factory.js";
 
 const router = Router();
 
@@ -12,19 +13,20 @@ function isMessage(m: unknown): m is Message {
   );
 }
 
-router.post("/", (req: Request, res: Response<ChatResponse | ChatError>) => {
+router.post("/", async (req: Request, res: Response<ChatResponse | ChatError>) => {
   const body = req.body as Partial<ChatRequest>;
 
-  if (typeof body?.message !== "string" || !Array.isArray(body?.history) || !body.history.every(isMessage)) {
+  if (
+    typeof body?.message !== "string" ||
+    !Array.isArray(body?.history) ||
+    !body.history.every(isMessage)
+  ) {
     return res.status(400).json({ error: "Invalid request body" });
   }
 
-  const response: ChatResponse = {
-    reply: `Echo: ${body.message}`,
-    insights: { intent: "query", sentiment: "neutral" },
-  };
-
-  res.json(response);
+  const provider = getProvider();
+  const { reply, insights } = await provider.chat(body.message, body.history);
+  res.json({ reply, insights });
 });
 
 export default router;
