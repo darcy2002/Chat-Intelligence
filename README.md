@@ -82,8 +82,8 @@ The frontend owns conversation history and sends it on every request. This avoid
 **Logic provider as fallback**
 Every real provider wraps its API call in try/catch and falls back to the rule-based logic provider on any error. The chat never breaks due to a network blip or API hiccup. The logic provider also means the project runs with zero configuration.
 
-**Vite proxy over CORS**
-The Vite dev server proxies `/api` to `http://localhost:3001`. No `cors()` middleware needed, no preflight requests, and the setup mirrors a production deployment where both apps share an origin behind a reverse proxy.
+**Environment-based API URLs**
+The frontend reads `VITE_API_BASE_URL` from the environment (defaults to `http://localhost:3001`). This allows the frontend to point to any backend — local dev, staging, or production — without code changes. The Vite dev server does not proxy `/api`; the frontend makes direct HTTP calls with the configured base URL.
 
 **Insights toggle**
 Default on — the classification is the point of the project. The toggle exists so a reviewer can verify the UI degrades gracefully and so a real user can declutter the view mid-conversation.
@@ -106,6 +106,82 @@ type Insights  = { intent: string; sentiment: "positive" | "neutral" | "negative
 ```
 
 `400` on malformed request body. `500` on unhandled server error. Both return `ChatError`.
+
+---
+
+## Deployment
+
+This project is designed for split deployment: **frontend on Vercel**, **backend on Railway/Render/other Node.js hosts**.
+
+### Frontend Deployment (Vercel)
+
+1. **Connect to Vercel**  
+   Push code to GitHub. In Vercel dashboard, create a new project and select the GitHub repo.
+
+2. **Configure build settings**
+   - Framework: Vite
+   - Build command: `npm run build`
+   - Output directory: `frontend/dist`
+   - Install command: `npm install`
+
+3. **Set environment variables**  
+   In Vercel project settings → Environment Variables, add:
+   ```
+   VITE_API_BASE_URL=https://your-backend-domain.com
+   ```
+   Replace `your-backend-domain.com` with your backend's deployed URL (e.g., `https://chat-backend.railway.app`).
+
+4. **Deploy**  
+   Vercel auto-deploys on each push to `main`. The frontend will be live at `your-vercel-app.vercel.app`.
+
+### Backend Deployment (Railway, Render, or Heroku)
+
+The backend is a standard Node.js/Express server. Steps vary by platform:
+
+**Railway:**
+1. Connect GitHub repo
+2. Select `backend/` as root directory
+3. Add environment variables:
+   - `LLM_PROVIDER` (e.g., `groq`)
+   - `GROQ_API_KEY` (or whichever provider's key you're using)
+4. Railway auto-detects Node.js and runs `npm run build` + `npm start`
+5. Copy the public railway.app URL and add it to frontend's `VITE_API_BASE_URL`
+
+**Render:**
+1. New → Web Service, select GitHub repo
+2. Set root directory to `backend/`
+3. Build command: `npm run build`
+4. Start command: `node dist/index.js`
+5. Add environment variables (same as Railway)
+6. Deploy and copy the render.com URL to frontend config
+
+**Heroku:**
+1. Create app: `heroku create your-app-name`
+2. Set buildpack: `heroku buildpacks:set heroku/nodejs`
+3. Set env vars: `heroku config:set LLM_PROVIDER=groq GROQ_API_KEY=xxx`
+4. Deploy: `git push heroku main` (from backend/ directory or adjust Procfile)
+5. Copy Heroku app URL to frontend config
+
+### Local Development
+
+After cloning, set `VITE_API_BASE_URL` for local dev:
+
+```bash
+# frontend/.env.local
+VITE_API_BASE_URL=http://localhost:3001
+```
+
+This file is already created and git-ignored. Then:
+
+```bash
+# Terminal 1
+cd backend && npm run dev      # backend on :3001
+
+# Terminal 2
+cd frontend && npm run dev     # frontend on :5173
+```
+
+Open http://localhost:5173. The frontend will call http://localhost:3001/api/chat.
 
 ---
 
