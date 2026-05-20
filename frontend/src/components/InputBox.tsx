@@ -1,4 +1,5 @@
 import { useState, type KeyboardEvent } from "react";
+import { ArrowUp } from "lucide-react";
 
 type Props = {
   onSend: (content: string) => void;
@@ -25,23 +26,33 @@ export default function InputBox({ onSend, disabled }: Props) {
   const canSend = value.trim().length > 0 && !disabled;
 
   return (
-    <div className="border-t border-zinc-200 bg-white pt-3 pb-1 flex gap-2 items-end">
-      <textarea
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={onKeyDown}
-        rows={2}
-        placeholder="Type a message… (Enter to send, Shift+Enter for newline)"
-        disabled={disabled}
-        className="flex-1 resize-none rounded-xl border border-zinc-300 px-3.5 py-2.5 text-sm leading-relaxed text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-zinc-50 disabled:text-zinc-400 transition"
-      />
-      <button
-        onClick={submit}
-        disabled={!canSend}
-        className="rounded-xl bg-indigo-600 text-white px-4 py-2.5 text-sm font-medium hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+    <div className="py-4">
+      <div
+        className="glass-input flex items-end gap-3 rounded-2xl px-4 py-3 focus-within:border-accent transition-colors"
       >
-        Send
-      </button>
+        <textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={onKeyDown}
+          rows={1}
+          placeholder="Ask me anything…"
+          disabled={disabled}
+          className="flex-1 resize-none bg-transparent text-sm t-text placeholder:t-text-muted focus:outline-none leading-relaxed disabled:opacity-50"
+          style={{ color: "var(--text)" }}
+        />
+        <button
+          onClick={submit}
+          disabled={!canSend}
+          title="Send message"
+          aria-label="Send message"
+          className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center disabled:opacity-35 transition-opacity"
+        >
+          <ArrowUp size={16} color="white" strokeWidth={2.5} />
+        </button>
+      </div>
+      <p className="text-center text-[11px] t-text-muted mt-2">
+        Enter to send · Shift+Enter for newline
+      </p>
     </div>
   );
 }

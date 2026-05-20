@@ -1,18 +1,144 @@
 @import "tailwindcss";
 
+/* ── Compile-time tokens (accent + semantic) ─────────────────── */
 @theme {
-  --color-sentiment-positive: #10b981;
-  --color-sentiment-neutral: #6b7280;
-  --color-sentiment-negative: #ef4444;
-  --color-intent: #4f46e5;
+  --color-accent:               #4f46e5;
+  --color-sentiment-positive:   #10b981;
+  --color-sentiment-neutral:    #6b7280;
+  --color-sentiment-negative:   #ef4444;
 }
 
-* {
-  box-sizing: border-box;
+/* ── Runtime theme tokens ────────────────────────────────────── */
+:root, [data-theme="light"] {
+  --bg-gradient:
+    radial-gradient(110% 70% at 8% 12%,  rgba(99, 102, 241, 0.20) 0%, transparent 55%),
+    radial-gradient(110% 70% at 92% 88%, rgba(236, 72, 153, 0.12) 0%, transparent 55%),
+    linear-gradient(135deg, #eef0ff 0%, #f3f4f8 50%, #eef2ff 100%);
+  --surface:       #ffffff;
+  --surface-2:     #f0f1f3;
+
+  --text:          #0f172a;
+  --text-muted:    #5b6478;
+
+  /* Apple-style glass — tint + highlight + border + shadow */
+  --glass-tint:    rgba(255, 255, 255, 0.55);  /* AI bubble + input */
+  --glass-user:    rgba(99, 102, 241, 0.16);   /* User bubble (indigo glass) */
+  --glass-border:  rgba(255, 255, 255, 0.45);
+  --glass-shine:   rgba(255, 255, 255, 0.55);
+  --glass-shadow:  0 8px 32px rgba(15, 23, 42, 0.12);
+
+  --border:        #e5e7eb;
+
+  /* Insight chips — soft tinted, color-family matched */
+  --chip-intent-bg:   rgba(99, 102, 241, 0.12);
+  --chip-intent-fg:   #4338ca;
+  --chip-pos-bg:      rgba(16, 185, 129, 0.14);
+  --chip-pos-fg:      #047857;
+  --chip-pos-dot:     #10b981;
+  --chip-neu-bg:      rgba(100, 116, 139, 0.14);
+  --chip-neu-fg:      #475569;
+  --chip-neu-dot:     #64748b;
+  --chip-neg-bg:      rgba(239, 68, 68, 0.12);
+  --chip-neg-fg:      #b91c1c;
+  --chip-neg-dot:     #ef4444;
+  --chip-intent-dot:  #6366f1;
 }
+
+[data-theme="dark"] {
+  --bg-gradient:
+    radial-gradient(110% 70% at 8% 12%,  rgba(99, 102, 241, 0.30) 0%, transparent 55%),
+    radial-gradient(110% 70% at 92% 88%, rgba(168, 85, 247, 0.18) 0%, transparent 55%),
+    linear-gradient(135deg, #0a0d1a 0%, #0e1226 50%, #11142b 100%);
+  --surface:       #161b27;
+  --surface-2:     #1c2030;
+
+  --text:          #f1f3f9;
+  --text-muted:    #9ba4b8;
+
+  --glass-tint:    rgba(30, 32, 44, 0.45);
+  --glass-user:    rgba(99, 102, 241, 0.22);
+  --glass-border:  rgba(255, 255, 255, 0.10);
+  --glass-shine:   rgba(255, 255, 255, 0.15);
+  --glass-shadow:  0 8px 32px rgba(0, 0, 0, 0.45);
+
+  --border:        #252d40;
+
+  --chip-intent-bg:   rgba(129, 140, 248, 0.18);
+  --chip-intent-fg:   #c7d2fe;
+  --chip-intent-dot:  #a5b4fc;
+  --chip-pos-bg:      rgba(16, 185, 129, 0.18);
+  --chip-pos-fg:      #86efac;
+  --chip-pos-dot:     #34d399;
+  --chip-neu-bg:      rgba(148, 163, 184, 0.18);
+  --chip-neu-fg:      #cbd5e1;
+  --chip-neu-dot:     #94a3b8;
+  --chip-neg-bg:      rgba(248, 113, 113, 0.20);
+  --chip-neg-fg:      #fca5a5;
+  --chip-neg-dot:     #f87171;
+}
+
+/* ── Theme utility classes (always emitted, no purge risk) ───── */
+.t-bg            { background: var(--bg-gradient); }
+.t-surface       { background-color: var(--surface); }
+.t-surface-2     { background-color: var(--surface-2); }
+.t-text          { color: var(--text); }
+.t-text-muted    { color: var(--text-muted); }
+.t-border        { border-color: var(--border); }
+
+/* Apple-style frosted glass — full layered recipe.
+ * 1. Backdrop blur + saturation (lifts colors behind the pane)
+ * 2. Semi-transparent tint
+ * 3. Inset top-edge highlight (the rim of light on real glass)
+ * 4. Hairline border + soft real drop shadow
+ */
+.glass-bubble-user,
+.glass-bubble-ai,
+.glass-input {
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-shine),  /* top rim highlight */
+    var(--glass-shadow);                 /* lift from surface */
+}
+
+.glass-bubble-ai,
+.glass-input,
+.glass-panel        { background: var(--glass-tint); }
+.glass-bubble-user  { background: var(--glass-user); }
+
+.glass-panel {
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 0 var(--glass-shine),
+    var(--glass-shadow);
+}
+
+/* Insight chips — flat soft tints, theme-aware */
+.chip-intent { background-color: var(--chip-intent-bg); color: var(--chip-intent-fg); }
+.chip-pos    { background-color: var(--chip-pos-bg);    color: var(--chip-pos-fg); }
+.chip-neu    { background-color: var(--chip-neu-bg);    color: var(--chip-neu-fg); }
+.chip-neg    { background-color: var(--chip-neg-bg);    color: var(--chip-neg-fg); }
+
+.chip-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  margin-right: 8px;
+}
+.chip-intent .chip-dot { background-color: var(--chip-intent-dot); }
+.chip-pos    .chip-dot { background-color: var(--chip-pos-dot); }
+.chip-neu    .chip-dot { background-color: var(--chip-neu-dot); }
+.chip-neg    .chip-dot { background-color: var(--chip-neg-dot); }
+
+/* ── Base ────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
 }

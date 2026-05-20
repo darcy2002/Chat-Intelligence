@@ -1,3 +1,4 @@
+import { User, Bot } from "lucide-react";
 import type { Sentiment } from "../types";
 import type { UIMessage } from "./ChatContainer";
 
@@ -6,41 +7,69 @@ type Props = {
   showInsights: boolean;
 };
 
-function sentimentBg(s: Sentiment): string {
-  if (s === "positive") return "bg-sentiment-positive";
-  if (s === "negative") return "bg-sentiment-negative";
-  return "bg-sentiment-neutral";
+function sentimentChip(s: Sentiment): string {
+  if (s === "positive") return "chip-pos";
+  if (s === "negative") return "chip-neg";
+  return "chip-neu";
+}
+
+function fmt(d: Date) {
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 export default function MessageItem({ message, showInsights }: Props) {
   const isUser = message.role === "user";
 
-  return (
-    <div className={`flex flex-col gap-1 ${isUser ? "items-end" : "items-start"}`}>
-      <div
-        className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
-          isUser
-            ? "bg-indigo-600 text-white rounded-br-sm"
-            : "bg-white border border-zinc-200 text-zinc-800 rounded-bl-sm shadow-xs"
-        }`}
-      >
-        {message.content}
-      </div>
+  const avatar = isUser ? (
+    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+      <User size={15} color="white" strokeWidth={2} />
+    </div>
+  ) : (
+    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent flex items-center justify-center">
+      <Bot size={15} color="white" strokeWidth={2} />
+    </div>
+  );
 
-      {isUser && showInsights && message.insights && (
-        <div className="flex gap-1.5 flex-wrap">
-          <span className="inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-full bg-intent text-white">
-            {message.insights.intent}
-          </span>
-          <span
-            className={`inline-flex items-center text-[11px] font-medium px-2.5 py-0.5 rounded-full text-white ${sentimentBg(
-              message.insights.sentiment
-            )}`}
-          >
-            {message.insights.sentiment}
-          </span>
+  const senderName = isUser ? "You" : "Pulse";
+
+  return (
+    <div className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+      {avatar}
+
+      <div
+        className={`flex flex-col gap-1.5 max-w-[78%] ${isUser ? "items-end" : "items-start"}`}
+      >
+        {/* Sender + time */}
+        <div className={`flex items-center gap-2 ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+          <span className="text-xs font-semibold t-text">{senderName}</span>
+          <span className="text-[11px] t-text-muted">{fmt(message.timestamp)}</span>
         </div>
-      )}
+
+        {/* Bubble */}
+        <div
+          className={`rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap break-words t-text ${
+            isUser ? "glass-bubble-user" : "glass-bubble-ai"
+          }`}
+        >
+          {message.content}
+        </div>
+
+        {/* Insight chips */}
+        {isUser && showInsights && message.insights && (
+          <div className="flex gap-2.5 flex-wrap">
+            <span className="chip-intent inline-flex items-center text-sm font-medium px-3 py-1.5 rounded-full">
+              <span className="chip-dot" />
+              {message.insights.intent}
+            </span>
+            <span
+              className={`${sentimentChip(message.insights.sentiment)} inline-flex items-center text-sm font-medium px-3 py-1.5 rounded-full`}
+            >
+              <span className="chip-dot" />
+              {message.insights.sentiment}
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

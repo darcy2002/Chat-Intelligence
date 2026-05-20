@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { UIMessage } from "./ChatContainer";
 import MessageItem from "./MessageItem";
 import TypingIndicator from "./TypingIndicator";
+import PulseLogo from "./PulseLogo";
 
 type Props = {
   messages: UIMessage[];
@@ -18,11 +19,16 @@ export default function MessageList({ messages, loading, error, showInsights }: 
   }, [messages.length, loading]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-1 py-4 space-y-4">
+    <div className="flex-1 overflow-y-auto py-6 space-y-6 flex flex-col">
       {messages.length === 0 && !loading && (
-        <div className="flex items-center justify-center h-full min-h-[160px]">
-          <p className="text-sm text-zinc-400 text-center">
-            Start the conversation by typing a message below.
+        <div className="flex-1 flex flex-col items-center justify-center min-h-[240px] gap-4 text-center px-6">
+          <PulseLogo size={56} />
+          <div className="flex flex-col gap-1">
+            <p className="text-xl font-semibold t-text">Hi there 👋</p>
+            <p className="text-base t-text">How can I help you today?</p>
+          </div>
+          <p className="text-sm t-text-muted max-w-xs">
+            Ask me anything — I'll reply and classify the intent and sentiment of your message.
           </p>
         </div>
       )}
@@ -34,7 +40,7 @@ export default function MessageList({ messages, loading, error, showInsights }: 
       {loading && <TypingIndicator />}
 
       {error && (
-        <div className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+        <div className="text-xs text-red-500 bg-red-50 rounded-xl px-4 py-2.5">
           {error}
         </div>
       )}
