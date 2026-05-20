@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sentiment-positive: #10b981;
+  --color-sentiment-neutral: #6b7280;
+  --color-sentiment-negative: #ef4444;
+  --color-intent: #4f46e5;
+}
