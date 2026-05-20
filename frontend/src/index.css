@@ -6,3 +6,13 @@
   --color-sentiment-negative: #ef4444;
   --color-intent: #4f46e5;
 }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

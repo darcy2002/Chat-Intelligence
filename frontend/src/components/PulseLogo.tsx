@@ -1,0 +1,26 @@
+type Props = {
+  size?: number;
+};
+
+export default function PulseLogo({ size = 36 }: Props) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 512 512"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="Pulse logo"
+    >
+      <rect width="512" height="512" rx="112" fill="#4f46e5" />
+      <path
+        d="M150 150 H362 a44 44 0 0 1 44 44 V300 a44 44 0 0 1 -44 44 H272 L232 392 L226 344 H150 a44 44 0 0 1 -44 -44 V194 a44 44 0 0 1 44 -44 Z"
+        fill="white"
+      />
+      <rect x="178" y="258" width="22" height="44" rx="9" fill="#4f46e5" />
+      <rect x="222" y="222" width="22" height="80" rx="9" fill="#4f46e5" />
+      <rect x="266" y="240" width="22" height="62" rx="9" fill="#4f46e5" />
+      <rect x="310" y="206" width="22" height="96" rx="9" fill="#4f46e5" />
+    </svg>
+  );
+}
