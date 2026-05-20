@@ -1,6 +1,9 @@
 import type { LLMProvider } from "./types.js";
 import { logicProvider } from "./logic.js";
 import { claudeProvider } from "./claude.js";
+import { openaiProvider } from "./openai.js";
+import { grokProvider } from "./grok.js";
+import { groqProvider } from "./groq.js";
 
 let cached: LLMProvider | null = null;
 
@@ -22,9 +25,28 @@ export function getProvider(): LLMProvider {
       }
       break;
     case "openai":
+      if (!process.env.OPENAI_API_KEY) {
+        console.warn('LLM_PROVIDER="openai" but OPENAI_API_KEY is missing; falling back to logic.');
+        cached = logicProvider;
+      } else {
+        cached = openaiProvider;
+      }
+      break;
     case "grok":
-      console.warn(`LLM_PROVIDER="${choice}" not yet implemented; falling back to logic.`);
-      cached = logicProvider;
+      if (!process.env.XAI_API_KEY) {
+        console.warn('LLM_PROVIDER="grok" but XAI_API_KEY is missing; falling back to logic.');
+        cached = logicProvider;
+      } else {
+        cached = grokProvider;
+      }
+      break;
+    case "groq":
+      if (!process.env.GROQ_API_KEY) {
+        console.warn('LLM_PROVIDER="groq" but GROQ_API_KEY is missing; falling back to logic.');
+        cached = logicProvider;
+      } else {
+        cached = groqProvider;
+      }
       break;
     default:
       console.warn(`Unknown LLM_PROVIDER="${choice}"; falling back to logic.`);
