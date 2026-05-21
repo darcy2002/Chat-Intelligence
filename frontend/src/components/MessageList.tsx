@@ -33,8 +33,8 @@ export default function MessageList({ messages, loading, error, showInsights }: 
         </div>
       )}
 
-      {messages.map((m, i) => (
-        <MessageItem key={i} message={m} showInsights={showInsights} />
+      {messages.map((m) => (
+        <MessageItem key={m.id} message={m} showInsights={showInsights} />
       ))}
 
       {loading && <TypingIndicator />}

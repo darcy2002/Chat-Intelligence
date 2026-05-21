@@ -5,7 +5,7 @@ import MessageList from "./MessageList";
 import InputBox from "./InputBox";
 import InsightsPanel from "./InsightsPanel";
 
-export type UIMessage = Message & { insights?: Insights; timestamp: Date };
+export type UIMessage = Message & { id: string; insights?: Insights; timestamp: Date };
 
 type Props = {
   showInsights: boolean;
@@ -19,7 +19,7 @@ export default function ChatContainer({ showInsights, showPanel, onClosePanel }:
   const [error, setError] = useState<string | null>(null);
 
   async function handleSend(content: string) {
-    const userMessage: UIMessage = { role: "user", content, timestamp: new Date() };
+    const userMessage: UIMessage = { id: crypto.randomUUID(), role: "user", content, timestamp: new Date() };
     const historyToSend: Message[] = messages.map(({ role, content }) => ({ role, content }));
     const indexOfUserMessage = messages.length;
 
@@ -34,7 +34,7 @@ export default function ChatContainer({ showInsights, showPanel, onClosePanel }:
         if (next[indexOfUserMessage]) {
           next[indexOfUserMessage] = { ...next[indexOfUserMessage], insights: res.insights };
         }
-        next.push({ role: "assistant", content: res.reply, timestamp: new Date() });
+        next.push({ id: crypto.randomUUID(), role: "assistant", content: res.reply, timestamp: new Date() });
         return next;
       });
     } catch (e) {
