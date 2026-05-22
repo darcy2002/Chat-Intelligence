@@ -89,7 +89,7 @@ The frontend reads `VITE_API_BASE_URL` from the environment (defaults to `http:/
 Default on — the classification is the point of the project. The toggle exists so a reviewer can verify the UI degrades gracefully and so a real user can declutter the view mid-conversation.
 
 **Production-grade system prompt**
-The system prompt encodes domain knowledge: support-seeking messages (e.g. "I want customer care") are classified as `negative` because reaching out to support is itself a friction signal, even without explicit negative words. This is backed by how Zendesk, Intercom, and similar platforms define implicit negative sentiment.
+The system prompt encodes domain knowledge: support-seeking messages (e.g. "I want customer care") are classified as `negative` because reaching out to support is itself a flag. I treat reaching out for support as a mild friction signal.
 
 ---
 
