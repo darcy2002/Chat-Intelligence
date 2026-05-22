@@ -199,27 +199,6 @@ Set `LLM_PROVIDER` in `backend/.env`. Restart the backend after changes.
 
 Missing key → warning logged → falls back to `logic` automatically.
 
----
-
-## Out of scope (would add for production)
-
-**Persistence + multi-conversation**
-Currently history lives in React state and is lost on refresh. A production build would persist conversations in a database (Postgres), with a sidebar to browse and resume past sessions.
-
-**Auth + rate limiting**
-No authentication means anyone with the URL can use any configured API key. Production would add auth (JWT or session), per-user rate limiting, and API key scoping.
-
-**Streaming responses**
-Replies appear only after the full response is received. Streaming (`text/event-stream` / SSE) would make long replies feel instant, dramatically improving perceived latency.
-
-**Observability**
-`console.log/error` is the only instrumentation. Production would add structured logging (pino), distributed tracing, and a metrics layer to track provider error rates, fallback frequency, and per-intent volume.
-
-**Admin / analytics view**
-The insights data is thrown away after render. A production build would store `{ intent, sentiment, timestamp }` per message and surface it in an admin view — sentiment trend over time, most common intents, escalation rate — which is the actual business value of the classification.
-
----
-
 ## Project structure
 
 ```
